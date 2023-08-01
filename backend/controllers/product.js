@@ -341,7 +341,7 @@ exports.getProductsBySlug = asyncHandler(async (req, res) => {
       return;
     }
 
-    let query = Product.find({ category: category._id })
+    let query = Product.find({ category: category._id, price: { $gte: min || 0, $lte: max || 99999 }, })
       // .populate("color")
       .lean();
 
@@ -354,11 +354,6 @@ exports.getProductsBySlug = asyncHandler(async (req, res) => {
       query = query.where("tags").in(["featured"]);
     }
 
-    // Filter products based on the selected brand
-    // if (brand) {
-    //   query = query.where("brand").equals(brand);
-    // }
-
     // Filter products based on ratings
     if (ratings) {
       const selectedRatings = ratings.split(",");
@@ -367,31 +362,23 @@ exports.getProductsBySlug = asyncHandler(async (req, res) => {
 
    // Filter products based on price range
   //  if (min && max) {
-  //    query = query.where("price").gte(min).lte(max);
+  //    query = query.where("price").gte(min).lt(max);
   //  } else if (min) {
   //    query = query.where("price").gte(min);
   //  } else if (max) {
-  //    query = query.where("price").lte(max);
+  //    query = query.where("price").lt(max);
   //  }
-  const convertedMinPrice = convertPrice(min, getCurrencyByRegion(region));
-  const convertedMaxPrice = convertPrice(max, getCurrencyByRegion(region));
-   if (min && max) {
-     query = query.where("price").gte(convertedMinPrice).lte(convertedMaxPrice);
-   } else if (min) {
-     query = query.where("price").gte(convertedMinPrice);
-   } else if (max) {
-     query = query.where("price").lte(convertedMaxPrice);
-   }
-
-   // Filter products based on the selected region (country)
-   if (region && region !== "undefined") {
-    query = query.where("country").equals(region);
-  } else {
-    res.status(400).json({
-      error: "Please provide a valid region (country) parameter.",
-    });
-    return;
-  }
+  
+    // Filter products based on the selected region (country)
+    if (region && region !== "undefined") {
+      query = query.where("country").equals(region);
+    } 
+    else {
+      return res.status(422).json({
+        error: "Please provide a valid region (country) parameter.",
+      });
+    }
+    
     // Pagination
     const parsedPage = parseInt(page) || 1;
     const parsedLimit = parseInt(limit) || 10;
@@ -399,51 +386,10 @@ exports.getProductsBySlug = asyncHandler(async (req, res) => {
 
     query = query.skip(skip).limit(parsedLimit);
 
-    const products = await query.exec();
     // Get total count for pagination
     const totalCount = await Product.countDocuments({ category: category._id });
 
-    // Currency Price
-    // const productsWithPrices = await Promise.all(
-    //   products.map(async (product) => {
-    //     const { price } = product;
-    //     // const convertedPrice = await convertPrice(
-    //     //   price,
-    //     //   getCurrencyByRegion(region)
-    //     // );
-    //     const convertedPrice = await convertPrice(parseFloat(price), getCurrencyByRegion(region));
-    //     let currencySymbol = "";
-
-    //     switch (getCurrencyByRegion(region)) {
-    //       case "PKR":
-    //         currencySymbol = "PKR";
-    //         break;
-    //       case "USD":
-    //         currencySymbol = "$";
-    //         break;
-    //       case "AED":
-    //         currencySymbol = "AED";
-    //         break;
-    //       case "GBP":
-    //         currencySymbol = "£";
-    //         break;
-    //       case "OMR":
-    //         currencySymbol = "OMR";
-    //         break;
-    //       case "EUR":
-    //         currencySymbol = "€";
-    //         break;
-    //       case "INR":
-    //         currencySymbol = "₹";
-    //         break;
-    //       // Add more cases for other currencies as needed
-    //       default:
-    //         currencySymbol = "";
-    //     }
-
-    //     return { ...product, price: `${currencySymbol}${convertedPrice}` };
-    //   })
-    // );
+    
 
     // Calculate pagination links
     const totalPages = Math.ceil(totalCount / parsedLimit);
@@ -451,6 +397,7 @@ exports.getProductsBySlug = asyncHandler(async (req, res) => {
     const hasPrevPage = parsedPage > 1;
     const nextPage = hasNextPage ? parsedPage + 1 : null;
     const prevPage = hasPrevPage ? parsedPage - 1 : null;
+    const products = await query.exec();
 
     res.status(200).json({
       total: totalCount,
