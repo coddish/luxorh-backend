@@ -331,7 +331,7 @@ exports.getProduct = asyncHandler(async (req, res) => {
 exports.getProductsBySlug = asyncHandler(async (req, res) => {
   try {
     const { slug,region } = req.params;
-    const { sort, ratings, page, limit, min, max } = req.query;
+    const { sort, ratings, page, limit,min,max} = req.query;
     const category = await Category.findOne({ slug }).select("_id").lean();
 
     if (!category) {
@@ -341,9 +341,7 @@ exports.getProductsBySlug = asyncHandler(async (req, res) => {
       return;
     }
 
-    let query = Product.find({ category: category._id, price: { $gte: min || 0, $lte: max || 99999 }, })
-      // .populate("color")
-      .lean();
+    let query = Product.find({ category: category._id })
 
     // Filter products based on the selected option
     if (sort === "popular") {
@@ -378,6 +376,16 @@ exports.getProductsBySlug = asyncHandler(async (req, res) => {
         error: "Please provide a valid region (country) parameter.",
       });
     }
+    // Filter products based on price range
+if (min && max) {
+  query = query.where("price").gte(min).lte(max);
+} else if (min) {
+  query = query.where("price").gte(min);
+} else if (max) {
+  query = query.where("price").lte(max);
+}
+
+query = query.lean();
     
     // Pagination
     const parsedPage = parseInt(page) || 1;
