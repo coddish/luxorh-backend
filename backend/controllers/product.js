@@ -341,8 +341,15 @@ exports.getProductsBySlug = asyncHandler(async (req, res) => {
       return;
     }
 
-    let query = Product.find({ category: category._id })
-
+    // let query = Product.find({ category: category._id })
+    let query = new ApiFeatures(
+      Product.find({
+        // ...others,
+        category: category._id,
+        cheapestPrice: { $gte: min | 1, $lte: max || 99999 },
+      })
+    );
+    // const hotels = await apiFeature.query;
     // Filter products based on the selected option
     if (sort === "popular") {
       query = query.where("tags").in(["popular"]);
@@ -405,6 +412,7 @@ query = query.lean();
     const hasPrevPage = parsedPage > 1;
     const nextPage = hasNextPage ? parsedPage + 1 : null;
     const prevPage = hasPrevPage ? parsedPage - 1 : null;
+    
     const products = await query.exec();
 
     res.status(200).json({
