@@ -342,7 +342,7 @@ exports.getProductsBySlug = asyncHandler(async (req, res) => {
     }
 
     // let query = Product.find({ category: category._id })
-    let query = new ApiFeatures(
+    let apiFeature = new ApiFeatures(
       Product.find({
         ...others,
         category: category._id,
@@ -413,7 +413,7 @@ exports.getProductsBySlug = asyncHandler(async (req, res) => {
     // const nextPage = hasNextPage ? parsedPage + 1 : null;
     // const prevPage = hasPrevPage ? parsedPage - 1 : null;
 
-    const products = await query.exec();
+    const products = await apiFeature.query
 
     res.status(200).json({
       // total: totalCount,
