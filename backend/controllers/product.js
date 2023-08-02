@@ -331,7 +331,7 @@ exports.getProduct = asyncHandler(async (req, res) => {
 exports.getProductsBySlug = asyncHandler(async (req, res) => {
   try {
     const { slug,region } = req.params;
-    const { sort, ratings, page, limit,min,max} = req.query;
+    const { sort, ratings, page, limit,min,max,others} = req.query;
     const category = await Category.findOne({ slug }).select("_id").lean();
 
     if (!category) {
@@ -344,26 +344,26 @@ exports.getProductsBySlug = asyncHandler(async (req, res) => {
     // let query = Product.find({ category: category._id })
     let query = new ApiFeatures(
       Product.find({
-        // ...others,
+        ...others,
         category: category._id,
-        cheapestPrice: { $gte: min | 1, $lte: max || 99999 },
+        price: { $gte: min | 1, $lte: max || 99999 },
       })
     );
     // const hotels = await apiFeature.query;
     // Filter products based on the selected option
-    if (sort === "popular") {
-      query = query.where("tags").in(["popular"]);
-    } else if (sort === "special") {
-      query = query.where("tags").in(["special"]);
-    } else if (sort === "featured") {
-      query = query.where("tags").in(["featured"]);
-    }
+    // if (sort === "popular") {
+    //   query = query.where("tags").in(["popular"]);
+    // } else if (sort === "special") {
+    //   query = query.where("tags").in(["special"]);
+    // } else if (sort === "featured") {
+    //   query = query.where("tags").in(["featured"]);
+    // }
 
     // Filter products based on ratings
-    if (ratings) {
-      const selectedRatings = ratings.split(",");
-      query = query.where("totalRatings").in(selectedRatings);
-    }
+    // if (ratings) {
+    //   const selectedRatings = ratings.split(",");
+    //   query = query.where("totalRatings").in(selectedRatings);
+    // }
 
    // Filter products based on price range
   //  if (min && max) {
@@ -384,13 +384,13 @@ exports.getProductsBySlug = asyncHandler(async (req, res) => {
       });
     }
     // Filter products based on price range
-if (min && max) {
-  query = query.where("price").gte(min).lte(max);
-} else if (min) {
-  query = query.where("price").gte(min);
-} else if (max) {
-  query = query.where("price").lte(max);
-}
+// if (min && max) {
+//   query = query.where("price").gte(min).lte(max);
+// } else if (min) {
+//   query = query.where("price").gte(min);
+// } else if (max) {
+//   query = query.where("price").lte(max);
+// }
 
 query = query.lean();
     
@@ -412,7 +412,7 @@ query = query.lean();
     const hasPrevPage = parsedPage > 1;
     const nextPage = hasNextPage ? parsedPage + 1 : null;
     const prevPage = hasPrevPage ? parsedPage - 1 : null;
-    
+
     const products = await query.exec();
 
     res.status(200).json({
