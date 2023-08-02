@@ -375,14 +375,14 @@ exports.getProductsBySlug = asyncHandler(async (req, res) => {
   //  }
   
     // Filter products based on the selected region (country)
-    if (region && region !== "undefined") {
-      query = query.where("country").equals(region);
-    } 
-    else {
-      return res.status(422).json({
-        error: "Please provide a valid region (country) parameter.",
-      });
-    }
+    // if (region && region !== "undefined") {
+    //   query = query.where("country").equals(region);
+    // } 
+    // else {
+    //   return res.status(422).json({
+    //     error: "Please provide a valid region (country) parameter.",
+    //   });
+    // }
     // Filter products based on price range
 // if (min && max) {
 //   query = query.where("price").gte(min).lte(max);
