@@ -346,7 +346,7 @@ exports.getProductsBySlug = asyncHandler(async (req, res) => {
       Product.find({
         ...others,
         category: category._id,
-        price: { $gte: min | 1, $lte: max || 99999 },
+        price: { $gte: min || 0, $lte: max || 99999 },
       })
     );
     // const hotels = await apiFeature.query;
@@ -395,35 +395,35 @@ exports.getProductsBySlug = asyncHandler(async (req, res) => {
 // query = query.lean();
     
     // Pagination
-    const parsedPage = parseInt(page) || 1;
-    const parsedLimit = parseInt(limit) || 10;
-    const skip = (parsedPage - 1) * parsedLimit;
+    // const parsedPage = parseInt(page) || 1;
+    // const parsedLimit = parseInt(limit) || 10;
+    // const skip = (parsedPage - 1) * parsedLimit;
 
-    query = query.skip(skip).limit(parsedLimit);
+    // query = query.skip(skip).limit(parsedLimit);
 
-    // Get total count for pagination
-    const totalCount = await Product.countDocuments({ category: category._id });
+    // // Get total count for pagination
+    // const totalCount = await Product.countDocuments({ category: category._id });
 
     
 
-    // Calculate pagination links
-    const totalPages = Math.ceil(totalCount / parsedLimit);
-    const hasNextPage = parsedPage < totalPages;
-    const hasPrevPage = parsedPage > 1;
-    const nextPage = hasNextPage ? parsedPage + 1 : null;
-    const prevPage = hasPrevPage ? parsedPage - 1 : null;
+    // // Calculate pagination links
+    // const totalPages = Math.ceil(totalCount / parsedLimit);
+    // const hasNextPage = parsedPage < totalPages;
+    // const hasPrevPage = parsedPage > 1;
+    // const nextPage = hasNextPage ? parsedPage + 1 : null;
+    // const prevPage = hasPrevPage ? parsedPage - 1 : null;
 
     const products = await query.exec();
 
     res.status(200).json({
-      total: totalCount,
-      page: parsedPage,
-      limit: parsedLimit,
+      // total: totalCount,
+      // page: parsedPage,
+      // limit: parsedLimit,
       products: products,
-      hasNextPage,
-      hasPrevPage,
-      nextPage,
-      prevPage,
+      // hasNextPage,
+      // hasPrevPage,
+      // nextPage,
+      // prevPage,
     });
   } catch (error) {
     throw new Error(error);
