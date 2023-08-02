@@ -392,7 +392,7 @@ exports.getProductsBySlug = asyncHandler(async (req, res) => {
 //   query = query.where("price").lte(max);
 // }
 
-query = query.lean();
+// query = query.lean();
     
     // Pagination
     const parsedPage = parseInt(page) || 1;
