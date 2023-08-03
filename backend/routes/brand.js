@@ -17,5 +17,5 @@ router.put("/:id", authMiddleware, isAdmin, updateBrand);
 router.delete("/:id", authMiddleware, isAdmin, deleteBrand);
 router.get("/:id", getBrand);
 router.get("/", getallBrand);
-
+// mdo
 module.exports = router;
