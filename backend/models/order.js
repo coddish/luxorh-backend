@@ -1,16 +1,16 @@
 const mongoose = require("mongoose");
 const orderSchema = new mongoose.Schema(
   {
-    orderBy: {
-      name: {
-        type: String,
-        required: true,
-      },
-      email: {
-        type: String,
-        required: true,
-      },
-    },
+    // orderBy: {
+    //   name: {
+    //     type: String,
+    //     required: true,
+    //   },
+    //   email: {
+    //     type: String,
+    //     required: true,
+    //   },
+    // },
     sharedProduct: {
       productId: {
         type: String,
