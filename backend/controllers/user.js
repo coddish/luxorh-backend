@@ -624,14 +624,11 @@ exports.getWishList = asyncHandler(async (req, res) => {
 //saveSharedOrder
 exports.saveSharedOrder = asyncHandler(async (req, res) => {
   const { sharedProduct, orderFor, orderBy } = req.body;
-  const { _id } = req.user;
-  validateMongodbId(_id);
   try {
     const order = await Order.create({
       sharedProduct,
       orderFor,
       orderBy,
-      user: _id,
     });
     res.json({
       message: "Order Saved Successfully",

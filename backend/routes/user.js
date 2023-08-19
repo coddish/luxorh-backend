@@ -75,7 +75,7 @@ router.get("/wishlist/", adminAuthMiddleware, getWishList);
 
 // router.post("/applyCoupon", authMiddleware, couponDiscount);
 
-router.post("/saveOrder", adminAuthMiddleware, saveSharedOrder);
+router.post("/saveOrder", saveSharedOrder);
 router.get("/getorders", getAllOrders);
 router.delete("/order/:id", adminAuthMiddleware, adminIsAdmin, deleteOrder);
 
